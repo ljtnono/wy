@@ -32,6 +32,11 @@ public class WyUserController {
         return wyUserService.getUserById(id);
     }
 
+    /**
+     * 根据name获取用户数据
+     * @param name 用户的名字
+     * @return JSON字符串
+     */
     @GetMapping("/getUserByName")
     @ResponseBody
     public WyUser getUserByName(@RequestParam(value = "name") String name) {

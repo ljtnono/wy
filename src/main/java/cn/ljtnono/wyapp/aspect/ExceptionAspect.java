@@ -41,6 +41,7 @@ public class ExceptionAspect {
      * @return JsonResult 错误信息
      */
     @ExceptionHandler(RuntimeException.class)
+    @ResponseBody
     public JsonResult globalException(HttpServletResponse response) {
         return JsonResult.newBuilder()
                 .status(response.getStatus())

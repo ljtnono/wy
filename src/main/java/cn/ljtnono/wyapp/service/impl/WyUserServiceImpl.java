@@ -30,7 +30,7 @@ public class WyUserServiceImpl implements WyUserService {
     public WyUser getUserByName(String name) {
         WyUserExample example = new WyUserExample();
         WyUserExample.Criteria criteria = example.createCriteria();
-        criteria.andNameLike(name);
+        criteria.andNameEqualTo(name);
         List<WyUser> wyUsers = wyUserMapper.selectByExample(example);
         return wyUsers.get(0);
     }
