@@ -1,5 +1,6 @@
 package cn.ljtnono.wyapp.pojo;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /** 请求JSON数据的模板
@@ -7,7 +8,9 @@ import java.util.Collection;
  *  @date 2019/1/11
  *  @version 1.0
 */
-public class JsonResult  {
+public class JsonResult  implements Serializable {
+
+    private static final long serialVersionUID = 7705614204693685169L;
     /**
      * 请求条数
      */
@@ -107,16 +110,12 @@ public class JsonResult  {
      * 通用的success类型
      * @return ok
      */
-    public static  JsonResult success(Collection<?> data,Integer totalCount) {
+    public static  JsonResult success(Collection<?> data, Integer totalCount) {
         JsonResult success = new JsonResult();
         success.setRequest("success");
         success.setStatus(200);
         success.setData(data);
-        if (data.size() == 0) {
-            success.setMessage("没有数据！");
-        } else {
-            success.setMessage("请求成功！");
-        }
+        success.setMessage(data.size() == 0 ? "没有数据！" : "请求成功！");
         success.setTotalCount(totalCount);
         return success;
     }
@@ -125,11 +124,13 @@ public class JsonResult  {
      * 通用的fial类型
      * @return fail
      */
-    public static JsonResult fail(Integer status,String message) {
+    public static JsonResult fail(Integer status, String message) {
         JsonResult fail = new JsonResult();
         fail.setRequest("fail");
         fail.setStatus(status);
         fail.setMessage(message);
+        fail.setData(null);
+        fail.setTotalCount(0);
         return fail;
     }
 
@@ -139,11 +140,13 @@ public class JsonResult  {
      * @param status 响应状态码
      * @return JsonResult
      */
-    public static JsonResult successForMessage(String message,Integer status) {
+    public static JsonResult successForMessage(String message, Integer status) {
         JsonResult success = new JsonResult();
         success.setRequest("success");
         success.setStatus(status);
         success.setMessage(message);
+        success.setTotalCount(0);
+        success.setData(null);
         return success;
     }
 

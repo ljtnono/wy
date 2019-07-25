@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 @ControllerAdvice(basePackages = {"cn.ljtnono.wyapp.controller"})
 public class ExceptionAspect {
 
-
     /**
      * 出现参数绑定错误的时候，返回错误信息
      * @param response 请求响应参数

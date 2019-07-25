@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan(basePackages = {"cn.ljtnono.wyapp.mapper"})
+@MapperScan(basePackages = {"cn.ljtnono.wyapp.dao"})
 public class WyappApplication {
 
     public static void main(String[] args) {

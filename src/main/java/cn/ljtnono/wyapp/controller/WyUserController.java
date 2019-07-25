@@ -1,6 +1,7 @@
 package cn.ljtnono.wyapp.controller;
 
 import cn.ljtnono.wyapp.entity.WyUser;
+import cn.ljtnono.wyapp.pojo.JsonResult;
 import cn.ljtnono.wyapp.service.WyUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,4 +44,15 @@ public class WyUserController {
         return wyUserService.getUserByName(name);
     }
 
+
+    /**
+     * 处理注册请求
+     * @return
+     */
+    @GetMapping("/regist")
+    @ResponseBody
+    public JsonResult regist() {
+
+        return null;
+    }
 }
