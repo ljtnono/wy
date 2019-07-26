@@ -21,10 +21,18 @@ public class UserUtil {
      * 获取随机用户名
      * @return 随机用户名
      */
-    public static String getRadomUserName() {
+    public static String getRadomUserId() {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < 32; i++) {
-            s.append(Math.random() * (args.length - 1));
+            s.append(args[(int) (Math.random() * (args.length - 1))]);
+        }
+        return s.toString();
+    }
+
+    public static String getRadomLoginName() {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            s.append(args[(int) (Math.random() * (args.length - 1))]);
         }
         return s.toString();
     }

@@ -1,11 +1,10 @@
 package cn.ljtnono.wyapp.entity.factory;
 
 import cn.ljtnono.wyapp.entity.WyUser;
+import cn.ljtnono.wyapp.utils.StringUtil;
 import cn.ljtnono.wyapp.utils.UserUtil;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 用户类创建工厂
@@ -16,11 +15,7 @@ import java.util.List;
 */
 public class WyUserFactory implements WyFactory{
 
-    private WyUser wyUser;
-
-    public WyUserFactory() {
-
-    }
+    public WyUserFactory() {}
     /**
      * 创建用户方法
      * @param args 创建时所需要的参数，具体看各个子类的要求
@@ -28,23 +23,55 @@ public class WyUserFactory implements WyFactory{
      */
     @Override
     public WyUser create(Object... args) {
-        WyUser wyUser = new WyUser();
-        if (args == null) {
-            return getDefault();
-        } else {
-            // 根据传递的参数获取
+        if (args == null || args.length < 3) {
+            throw new IllegalArgumentException("请检查参数的格式！");
         }
-        return wyUser;
+        final String tel = (String) args[0];
+        final String loginName = (String) args[1];
+        final String password = (String) args[2];
+        // 检查手机的正确性
+        if (!StringUtil.validateTel(tel)) {
+            throw new IllegalArgumentException("手机号码格式错误！");
+        }
+        // 检查用户名的正确性 10位字符串
+        if (StringUtil.isEmpty(loginName)) {
+            if (loginName.length() > 10 || loginName.length() < 4) {
+                throw new IllegalArgumentException("用户名为4-10个字符串！");
+            }
+            throw new IllegalArgumentException("用户名不能为空！");
+        }
+        // 检查密码的正确性 6-18位字符串
+        if (StringUtil.isEmpty(password)) {
+            if (loginName.length() > 18 || loginName.length() < 6) {
+                throw new IllegalArgumentException("密码为6-18个字符串！");
+            }
+            throw new IllegalArgumentException("密码不能为空！");
+        }
+        // 加密字符串
+        return getDefault(tel, loginName, StringUtil.encrypt(password, "MD5"));
     }
 
     /**
      * 生产默认类型的WyUser
-     * @return WyUser
+     * @param tel  用户注册的手机号
+     * @param loginName 用户设置的用户名
+     * @param password 用户的设置的密码
+     * @return 基本用户信息的WyUser对象
      */
-    private WyUser getDefault() {
+    private WyUser getDefault(final String tel, final String loginName, final String password) {
+        // 按照数据库中字段的默认值设置
         WyUser wyUser = new WyUser();
-        wyUser.setLoginName(UserUtil.getRadomUserName());
-
-        return null;
+        wyUser.setId(UserUtil.getRadomUserId());
+        wyUser.setName("");
+        wyUser.setTel(tel);
+        wyUser.setEmail("");
+        wyUser.setAddr("");
+        wyUser.setLoginName(loginName);
+        wyUser.setPassword(password);
+        wyUser.setCreateTime(new Date());
+        wyUser.setLoginName(null);
+        wyUser.setLastLoginTime(null);
+        wyUser.setProfile("");
+        return wyUser;
     }
 }

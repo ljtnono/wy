@@ -1,5 +1,12 @@
 package cn.ljtnono.wyapp.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.security.MessageDigest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *  字符串操作的一些封装
  *  @author ljt
@@ -8,14 +15,21 @@ package cn.ljtnono.wyapp.utils;
 */
 public class StringUtil {
 
+    private static Logger logger = LoggerFactory.getLogger(StringUtil.class);
+
     private StringUtil(){}
+
+    /**
+     * 验证手机号码的 Pattern对象
+     */
+    private static final Pattern TEL_REGEX = Pattern.compile("^[1][3,4,5,7,8][0-9]{9}$");
 
     /**
      * 检测字符串是否为空
      * @param val 要检测的字符串
      * @return true 为空 false 不为空
      */
-    public static boolean isEmpty(String val) {
+    public static boolean isEmpty(final String val) {
         return val == null || val.length() == 0;
     }
 
@@ -25,34 +39,76 @@ public class StringUtil {
      * @param val 需要删除的字符串
      * @return 删除空格和换行后的字符串
      */
-    public static String deleteBlank(String val) {
+    public static String deleteBlank(final String val) {
         String result = val;
-        if (val.isEmpty()) {
-            throw new IllegalArgumentException("不能删除空字符串！");
-        } else {
+        if (!val.isEmpty()) {
             // 删除字符串前后的空格
             result = result.trim();
             // 去掉所有的
             result = result.replaceAll("\\s", "");
-            return result;
         }
+        return result;
     }
 
     /**
      * 对字符串进行加密
      * @param val 需要加密的字符串
-     * @param type 加密类型
-     * @return 加密后的字符串
+     * @param type 加密类型 MD5 表示进行MD5加密
+     * @return 成功返回加密后的字符串 失败返回null
      */
-    public static String encrypt(String val, String type) {
-//        String result;
-//        if ("md5".equals(deleteBlank(type.toLowerCase()))) {
-//            result = EncryptUtil.getMD5(val);
-//        } else if ("".equals(deleteBlank(type.toLowerCase()))){
-//
-//        }
-        // TODO 加密
+    public static String encrypt(final String val, final String type) {
+        if (type.equalsIgnoreCase("MD5")) {
+            return encryptMD5(val);
+        }
         return null;
     }
 
+    /**
+     * md5加密方式 32位
+     * @param val 需要加密的字符串
+     * @return 失败返回null 成功返回加密后的字符串
+     */
+    private static final String encryptMD5(final String val) {
+        if (StringUtil.isEmpty(val)) {
+            throw new IllegalArgumentException("参数不能为空！");
+        }
+        char hexDigits[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+        try {
+            byte[] btInput = val.getBytes();
+            // 获得MD5摘要算法的 MessageDigest 对象
+            MessageDigest mdInst = MessageDigest.getInstance("MD5");
+            // 使用指定的字节更新摘要
+            mdInst.update(btInput);
+            // 获得密文
+            byte[] md = mdInst.digest();
+            // 把密文转换成十六进制的字符串形式
+            int j = md.length;
+            char str[] = new char[j * 2];
+            int k = 0;
+            for (int i = 0; i < j; i++) {
+                byte byte0 = md[i];
+                str[k++] = hexDigits[byte0 >>> 4 & 0xf];
+                str[k++] = hexDigits[byte0 & 0xf];
+            }
+            return new String(str);
+        } catch (Exception e) {
+            if (logger.isErrorEnabled()) {
+                logger.error("加密失败！原因：" + e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 验证一个字符串是否为手机的格式
+     * @param tel 需要验证的字符串
+     * @return 验证成功返回true  验证失败或者tel参数为空返回false
+     */
+    public static boolean validateTel(final String tel) {
+        if (isEmpty(tel)) {
+            return false;
+        }
+        Matcher matcher = TEL_REGEX.matcher(tel);
+        return matcher.matches();
+    }
 }
