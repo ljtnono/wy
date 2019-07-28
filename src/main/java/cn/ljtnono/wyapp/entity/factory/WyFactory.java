@@ -11,6 +11,7 @@ public interface WyFactory {
     /**
      * 创建实体
      * @param args 创建时所需要的参数，具体看各个子类的要求
+     * @return 返回各种实体类
      */
     Object create(Object... args);
 }

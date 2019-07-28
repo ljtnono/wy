@@ -14,23 +14,23 @@ public class JsonResult  implements Serializable {
     /**
      * 请求条数
      */
-    private Integer totalCount;
+    protected Integer totalCount;
     /**
      * 请求状态 success 代表成功 fail 代表失败
      */
-    private String request;
+    protected String request;
     /**
      * 请求状态码
      */
-    private Integer status;
+    protected Integer status;
     /**
      * 结果信息
      */
-    private String message;
+    protected String message;
     /**
      * 数据集合
      */
-    private Collection<?> data;
+    protected Collection<?> data;
 
 
     private JsonResult(Builder builder) {
@@ -55,43 +55,43 @@ public class JsonResult  implements Serializable {
         return builder;
     }
 
-    public Integer getTotalCount() {
+    protected Integer getTotalCount() {
         return totalCount;
     }
 
-    public void setTotalCount(Integer totalCount) {
+    protected void setTotalCount(Integer totalCount) {
         this.totalCount = totalCount;
     }
 
-    public String getRequest() {
+    protected String getRequest() {
         return request;
     }
 
-    public void setRequest(String request) {
+    protected void setRequest(String request) {
         this.request = request;
     }
 
-    public String getMessage() {
+    protected String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    protected void setMessage(String message) {
         this.message = message;
     }
 
-    public Collection<?> getData() {
+    protected Collection<?> getData() {
         return data;
     }
 
-    public void setData(Collection<?> data) {
+    protected void setData(Collection<?> data) {
         this.data = data;
     }
 
-    public Integer getStatus() {
+    protected Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    protected void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -190,6 +190,6 @@ public class JsonResult  implements Serializable {
             return new JsonResult(this);
         }
     }
-    private JsonResult() {
+    protected JsonResult() {
     }
 }
