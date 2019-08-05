@@ -55,43 +55,43 @@ public class JsonResult  implements Serializable {
         return builder;
     }
 
-    protected Integer getTotalCount() {
+    public Integer getTotalCount() {
         return totalCount;
     }
 
-    protected void setTotalCount(Integer totalCount) {
+    public void setTotalCount(Integer totalCount) {
         this.totalCount = totalCount;
     }
 
-    protected String getRequest() {
+    public String getRequest() {
         return request;
     }
 
-    protected void setRequest(String request) {
+    public void setRequest(String request) {
         this.request = request;
     }
 
-    protected String getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    protected void setMessage(String message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
-    protected Collection<?> getData() {
+    public Collection<?> getData() {
         return data;
     }
 
-    protected void setData(Collection<?> data) {
+    public void setData(Collection<?> data) {
         this.data = data;
     }
 
-    protected Integer getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    protected void setStatus(Integer status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -190,6 +190,6 @@ public class JsonResult  implements Serializable {
             return new JsonResult(this);
         }
     }
-    protected JsonResult() {
+    public JsonResult() {
     }
 }
