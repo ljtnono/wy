@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.MessageDigest;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -15,7 +14,7 @@ import java.util.regex.Pattern;
 */
 public class StringUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(StringUtil.class);
+    private final static Logger logger = LoggerFactory.getLogger(StringUtil.class);
 
     private StringUtil(){}
 
@@ -108,7 +107,6 @@ public class StringUtil {
         if (isEmpty(tel)) {
             return false;
         }
-        Matcher matcher = TEL_REGEX.matcher(tel);
-        return matcher.matches();
+        return TEL_REGEX.matcher(tel).matches();
     }
 }
