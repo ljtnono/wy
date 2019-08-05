@@ -19,16 +19,21 @@ public class WyUserFactory implements WyFactory{
     /**
      * 创建用户方法
      * @param args 创建时所需要的参数，具体看各个子类的要求
+     *             第一个参数是String 类型 logName
+     *             第二个参数是String 类型 password
+     *             第三个参数是String 类型 tel
+     *
      * @return WyUser实体
+     * TODO 待单元测试
      */
     @Override
     public WyUser create(Object... args) {
         if (args == null || args.length < 3) {
             throw new IllegalArgumentException("请检查参数的格式！");
         }
-        final String tel = (String) args[0];
-        final String loginName = (String) args[1];
-        final String password = (String) args[2];
+        final String tel = (String) args[2];
+        final String loginName = (String) args[0];
+        final String password = (String) args[1];
         // 检查手机的正确性
         if (!StringUtil.validateTel(tel)) {
             throw new IllegalArgumentException("手机号码格式错误！");
@@ -69,7 +74,7 @@ public class WyUserFactory implements WyFactory{
         wyUser.setLoginName(loginName);
         wyUser.setPassword(password);
         wyUser.setCreateTime(new Date());
-        wyUser.setLoginName(null);
+        wyUser.setLoginTime(null);
         wyUser.setLastLoginTime(null);
         wyUser.setProfile("");
         return wyUser;
