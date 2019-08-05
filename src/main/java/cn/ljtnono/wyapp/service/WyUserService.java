@@ -14,14 +14,14 @@ public interface WyUserService {
      * @param id 用户id
      * @return 用户信息
      */
-    WyUser getUserById(String id);
+    WyUser getUserById(final String id);
 
     /**
      * 根据name获取用户信息
      * @param name 用户id
      * @return 用户信息
      */
-    WyUser getUserByName(String name);
+    WyUser getUserByName(final String name);
 
     /**
      * 处理用户注册业务
@@ -30,5 +30,12 @@ public interface WyUserService {
      * @param tel 用户手机
      * @return 注册后的WyUser对象
      */
-    WyUser regist(String loginName, String password, String tel);
+    WyUser regist(final String loginName, final String password, final String tel);
+
+    /**
+     *  验证用户名是否存在重复的
+     * @param loginName 注册时的用户名
+     * @return 重复返回true  不重复返回false 传入参数为null也返回false
+     */
+    boolean checkRepeat(final String loginName);
 }

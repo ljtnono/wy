@@ -6,6 +6,7 @@ import cn.ljtnono.wyapp.entity.WyUserExample;
 import cn.ljtnono.wyapp.entity.factory.WyFactory;
 import cn.ljtnono.wyapp.entity.factory.WyUserFactory;
 import cn.ljtnono.wyapp.service.WyUserService;
+import cn.ljtnono.wyapp.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +25,12 @@ public class WyUserServiceImpl implements WyUserService {
     private WyUserDao wyUserDao;
 
     @Override
-    public WyUser getUserById(String id) {
+    public WyUser getUserById(final String id) {
         return wyUserDao.selectByPrimaryKey(id);
     }
 
     @Override
-    public WyUser getUserByName(String name) {
+    public WyUser getUserByName(final String name) {
         WyUserExample example = new WyUserExample();
         WyUserExample.Criteria criteria = example.createCriteria();
         criteria.andNameEqualTo(name);
@@ -46,11 +47,29 @@ public class WyUserServiceImpl implements WyUserService {
      * @return 注册成功返回注册后的WyUser对象，注册失败返回null
      */
     @Override
-    public WyUser regist(String loginName, String password, String tel) {
+    public WyUser regist(final String loginName, final String password, final String tel) {
         WyFactory wyFactory = new WyUserFactory();
         WyUser user = (WyUser) wyFactory.create(loginName, password, tel);
-        int insert = wyUserDao.insert(user);
+        int insert = wyUserDao.insertSelective(user);
         return insert > 0 ? user : null;
+    }
+
+    /**
+     * 验证用户名是否存在重复的
+     *
+     * @param loginName 注册时的用户名
+     * @return 重复返回true  不重复返回false  传入参数为null也返回false
+     */
+    @Override
+    public boolean checkRepeat(final String loginName) {
+        if (StringUtil.isEmpty(loginName)) {
+            return false;
+        }
+        WyUserExample wyUserExample = new WyUserExample();
+        WyUserExample.Criteria criteria = wyUserExample.createCriteria();
+        criteria.andLoginNameEqualTo(loginName);
+        List<WyUser> wyUsers = wyUserDao.selectByExample(wyUserExample);
+        return !wyUsers.isEmpty();
     }
 
 }
