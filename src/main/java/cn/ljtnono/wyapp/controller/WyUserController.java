@@ -3,6 +3,7 @@ package cn.ljtnono.wyapp.controller;
 import cn.ljtnono.wyapp.entity.WyUser;
 import cn.ljtnono.wyapp.pojo.JsonResult;
 import cn.ljtnono.wyapp.service.WyUserService;
+import cn.ljtnono.wyapp.utils.UserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class WyUserController {
     @Autowired
     private WyUserService wyUserService;
 
-    private static Logger logger = LoggerFactory.getLogger(WyUserController.class);
+    private final static Logger logger = LoggerFactory.getLogger(WyUserController.class);
 
     /**
      * 根据id 获取用户数据
@@ -34,7 +35,7 @@ public class WyUserController {
      */
     @GetMapping("/getUserById")
     @ResponseBody
-    public WyUser getUserById(@RequestParam(value = "id") String id) {
+    public WyUser getUserById(@RequestParam(value = "id") final String id) {
         return wyUserService.getUserById(id);
     }
 
@@ -45,7 +46,7 @@ public class WyUserController {
      */
     @GetMapping("/getUserByName")
     @ResponseBody
-    public WyUser getUserByName(@RequestParam(value = "name") String name) {
+    public WyUser getUserByName(@RequestParam(value = "name") final String name) {
         return wyUserService.getUserByName(name);
     }
 
@@ -60,9 +61,9 @@ public class WyUserController {
      */
     @PostMapping("/regist")
     @ResponseBody
-    public JsonResult regist(@RequestParam("loginName") String loginName,
-                             @RequestParam("password") String password,
-                             @RequestParam("tel")String tel,
+    public JsonResult regist(@RequestParam("loginName") final String loginName,
+                             @RequestParam("password") final String password,
+                             @RequestParam("tel")final String tel,
                              HttpServletRequest request,
                              HttpServletResponse response) {
         JsonResult result;
@@ -88,6 +89,26 @@ public class WyUserController {
             }
             result = JsonResult.fail(response.getStatus(), e.getMessage());
         }
+        return result;
+    }
+
+    /**
+     *  检查用户名是否重复
+     * @param loginName 需要检查的用户名
+     * @return 重复返回true 不重复返回false loginName不符合格式也返回false
+     * TODO 待完善
+     */
+    @GetMapping("/checkRepeat")
+    @ResponseBody
+    public JsonResult checkRepeat(@RequestParam("loginName") final String loginName,
+                                  HttpServletResponse response) {
+
+        JsonResult result;
+        if (!UserUtil.validateLoginName(loginName)) {
+            result = JsonResult.successForMessage("请检查用户名的格式", response.getStatus());
+        }
+        boolean b = wyUserService.checkRepeat(loginName);
+        result = JsonResult.successForMessage(b ? "true" : "false", response.getStatus());
         return result;
     }
 }
