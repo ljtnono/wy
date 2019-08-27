@@ -153,7 +153,7 @@ public class WyUserController {
         }
         if (!UserUtil.validateLoginName(loginName)) {
             if (!UserUtil.validatePassword(password)) {
-                throw new IllegalArgumentException("");
+                throw new IllegalArgumentException("密码是6-18位字母和数字组合，包括.+*-_/特殊字符！");
             }
             throw new IllegalArgumentException("");
         }
@@ -168,7 +168,7 @@ public class WyUserController {
      * @return 成功返回登录的WyUser对象，失败返回null
      */
     private WyUser loginByTelNum(final String telNum, final String password) {
-
+    	
         return null;
     }
 
