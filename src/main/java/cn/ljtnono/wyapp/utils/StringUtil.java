@@ -109,4 +109,20 @@ public class StringUtil {
         }
         return TEL_REGEX.matcher(tel).matches();
     }
+
+    /**
+     * 根据regex正则表达式验证一个字符串格式
+     * @param arg 需要验证的代码
+     * @param pattern 正则表达式
+     * @return 符合格式返回true 不符合格式返回false
+     */
+    public static boolean validateStringByRegex(final String arg, final Pattern pattern) {
+        if (isEmpty(arg)) {
+            return false;
+        }
+        if (pattern == null ) {
+            throw new NullPointerException("正则表达式不能为null!");
+        }
+        return pattern.matcher(arg).matches();
+    }
 }

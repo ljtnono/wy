@@ -15,7 +15,7 @@ public class EncryptUtil {
      * @param source 需要加密的字符串
      * @return 密文
      */
-    public static String getMD5(String source) {
+    public static String getMD5(final String source) {
         return getMD5(source.getBytes());
     }
 
@@ -54,7 +54,7 @@ public class EncryptUtil {
      * @param source 需要加密的字符串
      * @return 加密后的密文
      */
-    public static String getMD5LowerCase(String source) {
+    public static String getMD5LowerCase(final String source) {
         return getMD5(source).toLowerCase();
     }
 
@@ -63,7 +63,7 @@ public class EncryptUtil {
      * @param source 需要加密的字符串
      * @return 加密后的密文
      */
-    public static String getMD5UpperCase(String source) {
+    public static String getMD5UpperCase(final String source) {
         return getMD5(source).toUpperCase();
     }
 
@@ -72,7 +72,7 @@ public class EncryptUtil {
      * @param source 获取64位加密的字符串
      * @return 密文
      */
-    public static String getMD5For64(String source) {
+    public static String getMD5For64LowerCase(final String source) {
 
         return null;
     }

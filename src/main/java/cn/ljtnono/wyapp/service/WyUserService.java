@@ -38,4 +38,5 @@ public interface WyUserService {
      * @return 重复返回true  不重复返回false 传入参数为null也返回false
      */
     boolean checkRepeat(final String loginName);
+
 }

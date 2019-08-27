@@ -1,7 +1,8 @@
 package cn.ljtnono.wyapp.utils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static cn.ljtnono.wyapp.utils.StringUtil.validateStringByRegex;
 
 /**
  * 用户工具类
@@ -23,9 +24,9 @@ public class UserUtil {
     private static Pattern LOGIN_NAME_REGEX = Pattern.compile("^[a-zA-Z0-9_-]{4,10}$");
     /**
      * 密码检测正则表达式
-     * 密码是6-20位字母和数字的组合 .+*-_/
+     * 密码是6-18位字母和数字的组合 .+*-_/
      */
-    private static Pattern PASSWORD_REGEX = Pattern.compile("^[a-zA-Z0-9_-]{4,10}$");
+    private static Pattern PASSWORD_REGEX = Pattern.compile("^[a-zA-Z0-9-\\_\\.\\+\\*\\/]{6,18}$");
     private UserUtil(){}
 
     /**
@@ -48,10 +49,7 @@ public class UserUtil {
      */
 
     public static boolean validateLoginName(final String loginName) {
-        if (loginName.isEmpty()) {
-            return false;
-        }
-        return LOGIN_NAME_REGEX.matcher(loginName).matches();
+        return validateStringByRegex(loginName, LOGIN_NAME_REGEX);
     }
 
     /**
@@ -61,9 +59,6 @@ public class UserUtil {
      * TODO 需要进行测试
      */
     public static boolean validatePassword(final String password) {
-        if (password.isEmpty()) {
-            return false;
-        }
-        return PASSWORD_REGEX.matcher(password).matches();
+        return validateStringByRegex(password, PASSWORD_REGEX);
     }
 }
