@@ -39,4 +39,11 @@ public interface WyUserService {
      */
     boolean checkRepeat(final String loginName);
 
+    /**
+     * 根据用户名和密码登录
+     * @param loginName 用户名
+     * @param password 密码（未加密之前）
+     * @return 成功返回
+     */
+    WyUser loginByLoginName(String loginName, String password);
 }

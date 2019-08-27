@@ -3,11 +3,11 @@ package cn.ljtnono.wyapp.controller;
 import cn.ljtnono.wyapp.entity.WyUser;
 import cn.ljtnono.wyapp.pojo.JsonResult;
 import cn.ljtnono.wyapp.service.WyUserService;
+import cn.ljtnono.wyapp.utils.StringUtil;
 import cn.ljtnono.wyapp.utils.UserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import java.util.Arrays;
  *  @date 2019/5/28
  *  @version 1.0
 */
-@Controller
+@RestController
 public class WyUserController {
 
     @Autowired
@@ -34,7 +34,6 @@ public class WyUserController {
      * @return JSON字符串
      */
     @GetMapping("/getUserById")
-    @ResponseBody
     public WyUser getUserById(@RequestParam(value = "id") final String id) {
         return wyUserService.getUserById(id);
     }
@@ -45,7 +44,6 @@ public class WyUserController {
      * @return JSON字符串
      */
     @GetMapping("/getUserByName")
-    @ResponseBody
     public WyUser getUserByName(@RequestParam(value = "name") final String name) {
         return wyUserService.getUserByName(name);
     }
@@ -60,7 +58,6 @@ public class WyUserController {
      * @return 返回携带User对象的JsonResult对象
      */
     @PostMapping("/regist")
-    @ResponseBody
     public JsonResult regist(@RequestParam("loginName") final String loginName,
                              @RequestParam("password") final String password,
                              @RequestParam("tel")final String tel,
@@ -98,13 +95,13 @@ public class WyUserController {
      * @return 重复返回true 不重复返回false loginName不符合格式也返回false
      */
     @GetMapping("/checkRepeat")
-    @ResponseBody
     public JsonResult checkRepeat(@RequestParam("loginName") final String loginName,
                                   HttpServletResponse response) {
 
         JsonResult result;
         if (!UserUtil.validateLoginName(loginName)) {
             result = JsonResult.successForMessage("请检查用户名的格式", response.getStatus());
+            return result;
         }
         boolean b = wyUserService.checkRepeat(loginName);
         result = JsonResult.successForMessage(b ? "true" : "false", response.getStatus());
@@ -114,22 +111,33 @@ public class WyUserController {
     /**
      * 用户登录
      * @param response http响应对象
-     * @return 成功返回携带user对象
+     * @param type 登陆的类型
+     *             type = 1，使用账号和密码登录
+     *             type = 2,  使用手机号和验证码登陆
+     *             type = 3,  使用qq登陆
+     *             type = 4,  使用微信登陆
+     * @return 成功返回携带user对象, 失败返回携带错误信息的JsonResult对象
      */
     @PostMapping("/login")
-    @ResponseBody
     public JsonResult login(@RequestParam("type") int type,
+                            WyUser user,
                             HttpServletResponse response) {
         if (type == 1) {
-
+            user = loginByLoginName(user.getLoginName(), user.getPassword());
         } else if (type == 2) {
-
+            user = loginByTelNum(user.getTel(), user.getPassword());
         } else if (type == 3) {
 
         } else {
 
         }
-        return null;
+        return JsonResult.newBuilder()
+                .request("success")
+                .data(Arrays.asList(user))
+                .message("登陆成功!")
+                .totalCount(0)
+                .status(response.getStatus())
+                .build();
     }
 
     /**
@@ -140,7 +148,16 @@ public class WyUserController {
      * @return 成功返回登录的WyUser对象，失败返回null
      */
     private WyUser loginByLoginName(final String loginName, final String password) {
-
+        if (StringUtil.isEmpty(loginName) || StringUtil.isEmpty(password)) {
+            throw new IllegalArgumentException("用户名或者密码不能为空！");
+        }
+        if (!UserUtil.validateLoginName(loginName)) {
+            if (!UserUtil.validatePassword(password)) {
+                throw new IllegalArgumentException("");
+            }
+            throw new IllegalArgumentException("");
+        }
+        WyUser user = wyUserService.loginByLoginName(loginName,password);
         return null;
     }
 
@@ -154,5 +171,7 @@ public class WyUserController {
 
         return null;
     }
+
+
 
 }
