@@ -71,31 +71,7 @@ public class StringUtil {
         if (StringUtil.isEmpty(val)) {
             throw new IllegalArgumentException("参数不能为空！");
         }
-        char hexDigits[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-        try {
-            byte[] btInput = val.getBytes();
-            // 获得MD5摘要算法的 MessageDigest 对象
-            MessageDigest mdInst = MessageDigest.getInstance("MD5");
-            // 使用指定的字节更新摘要
-            mdInst.update(btInput);
-            // 获得密文
-            byte[] md = mdInst.digest();
-            // 把密文转换成十六进制的字符串形式
-            int j = md.length;
-            char str[] = new char[j * 2];
-            int k = 0;
-            for (int i = 0; i < j; i++) {
-                byte byte0 = md[i];
-                str[k++] = hexDigits[byte0 >>> 4 & 0xf];
-                str[k++] = hexDigits[byte0 & 0xf];
-            }
-            return new String(str);
-        } catch (Exception e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("加密失败！原因：" + e.getMessage());
-            }
-        }
-        return null;
+        return EncryptUtil.getMD5(val);
     }
 
     /**
@@ -120,7 +96,7 @@ public class StringUtil {
         if (isEmpty(arg)) {
             return false;
         }
-        if (pattern == null ) {
+        if (pattern == null) {
             throw new NullPointerException("正则表达式不能为null!");
         }
         return pattern.matcher(arg).matches();

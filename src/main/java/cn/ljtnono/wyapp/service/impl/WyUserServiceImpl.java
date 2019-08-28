@@ -71,5 +71,30 @@ public class WyUserServiceImpl implements WyUserService {
         List<WyUser> wyUsers = wyUserDao.selectByExample(wyUserExample);
         return !wyUsers.isEmpty();
     }
+    
+    /**
+     * 根据用户名和密码登陆
+     * TODO 等待测试
+     * @param loginName 登陆用户名
+     * @param password 登陆的密码
+     * @return 登陆成功返回登陆的WyUser对象，失败返回null，用户名和密码为空也返回null
+     */ 
+    @Override
+    public WyUser loginByLoginName(final String loginName, final String password) {
+    	if (StringUtils.isEmpty(loginName) || StringUtils.isEmpty(password)) {
+    		return null;
+    	}
+    	WyUserExample wyUserExample = new WyUserExample();
+    	WyUserExample.Criteria criteria = wyUserExample.createCriteria();
+    	criteria.andLoginNameEqualTo(loginName);
+    	criteria.andPasswordEqualTo(password);
+    	List<WyUser> wyUsers = wyUserDao.selectByExample(wyUserExample);
+    	// 设置登录时间为当前时间，并且根据登陆时间
+    	WyUser user = new WyUser();
+    	user.setLoginTime(new Date());
+    	user.setlastLoginTime(user.getLoginTime());
+    	wyUserDao.updateByExampleSelective(user, wyUserExample);
+    	return wyUsers.get(0);
+    }
 
 }

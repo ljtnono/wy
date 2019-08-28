@@ -155,10 +155,10 @@ public class WyUserController {
             if (!UserUtil.validatePassword(password)) {
                 throw new IllegalArgumentException("密码是6-18位字母和数字组合，包括.+*-_/特殊字符！");
             }
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException("用户名是4-10位字母数字组合！");
         }
         WyUser user = wyUserService.loginByLoginName(loginName,password);
-        return null;
+        return user;
     }
 
     /**

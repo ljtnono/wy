@@ -43,7 +43,8 @@ public interface WyUserService {
      * 根据用户名和密码登录
      * @param loginName 用户名
      * @param password 密码（未加密之前）
-     * @return 成功返回
+     * @return 成功返回携带登陆用户信息的WyUser对象，失败返回null，参数为空也返回null
      */
-    WyUser loginByLoginName(String loginName, String password);
+    WyUser loginByLoginName(final String loginName, final String password);
+    
 }
