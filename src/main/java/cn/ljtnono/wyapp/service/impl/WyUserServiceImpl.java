@@ -9,7 +9,11 @@ import cn.ljtnono.wyapp.service.WyUserService;
 import cn.ljtnono.wyapp.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,16 +23,19 @@ import java.util.List;
  *  @version 1.0
 */
 @Service
+@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = {Exception.class})
 public class WyUserServiceImpl implements WyUserService {
 
     @Autowired
     private WyUserDao wyUserDao;
 
+    @Transactional(readOnly = true)
     @Override
     public WyUser getUserById(final String id) {
         return wyUserDao.selectByPrimaryKey(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public WyUser getUserByName(final String name) {
         WyUserExample example = new WyUserExample();
@@ -60,6 +67,7 @@ public class WyUserServiceImpl implements WyUserService {
      * @param loginName 注册时的用户名
      * @return 重复返回true  不重复返回false  传入参数为null也返回false
      */
+    @Transactional(readOnly = true)
     @Override
     public boolean checkRepeat(final String loginName) {
         if (StringUtil.isEmpty(loginName)) {
@@ -74,25 +82,26 @@ public class WyUserServiceImpl implements WyUserService {
     
     /**
      * 根据用户名和密码登陆
-     * TODO 等待测试
      * @param loginName 登陆用户名
      * @param password 登陆的密码
      * @return 登陆成功返回登陆的WyUser对象，失败返回null，用户名和密码为空也返回null
-     */ 
+     */
     @Override
     public WyUser loginByLoginName(final String loginName, final String password) {
-    	if (StringUtils.isEmpty(loginName) || StringUtils.isEmpty(password)) {
+    	if (StringUtil.isEmpty(loginName) || StringUtil.isEmpty(password)) {
     		return null;
     	}
     	WyUserExample wyUserExample = new WyUserExample();
     	WyUserExample.Criteria criteria = wyUserExample.createCriteria();
     	criteria.andLoginNameEqualTo(loginName);
-    	criteria.andPasswordEqualTo(password);
+    	criteria.andPasswordEqualTo(StringUtil.encrypt(password, "MD5"));
     	List<WyUser> wyUsers = wyUserDao.selectByExample(wyUserExample);
+    	if (wyUsers == null || wyUsers.size() == 0) {
+    	    return null;
+        }
     	// 设置登录时间为当前时间，并且根据登陆时间
     	WyUser user = new WyUser();
     	user.setLoginTime(new Date());
-    	user.setlastLoginTime(user.getLoginTime());
     	wyUserDao.updateByExampleSelective(user, wyUserExample);
     	return wyUsers.get(0);
     }
