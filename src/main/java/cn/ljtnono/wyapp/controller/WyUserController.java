@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  *  用户数据获取
@@ -71,13 +71,13 @@ public class WyUserController {
                 if (logger.isErrorEnabled()) {
                     logger.info("[" + request.getRemoteAddr() + "]" + "请求注册账号失败！数据库插入失败" );
                 }
-                throw new IllegalArgumentException("注册失败！");
+                throw new IllegalArgumentException("注册失败");
             } else {
-                result = JsonResult.newBuilder().message("注册成功！")
+                result = JsonResult.newBuilder().message("注册成功")
                         .totalCount(null)
                         .status(response.getStatus())
                         .request("success")
-                        .data(Arrays.asList(wyUser))
+                        .data(Collections.singletonList(wyUser))
                         .build();
             }
         } catch (IllegalArgumentException e) {
@@ -116,12 +116,13 @@ public class WyUserController {
      *             type = 2,  使用手机号和验证码登陆
      *             type = 3,  使用qq登陆
      *             type = 4,  使用微信登陆
-     * @return 成功返回携带user对象, 失败返回携带错误信息的JsonResult对象
+     * @return 成功返回携带user对象, 失败返回携带错误信息的JsonResult对象, 用户不存在返回用户
      */
     @PostMapping("/login")
     public JsonResult login(@RequestParam("type") int type,
                             WyUser user,
                             HttpServletResponse response) {
+
         if (type == 1) {
             user = loginByLoginName(user.getLoginName(), user.getPassword());
         } else if (type == 2) {
@@ -131,13 +132,13 @@ public class WyUserController {
         } else {
 
         }
-        return JsonResult.newBuilder()
-                .request("success")
-                .data(Arrays.asList(user))
-                .message("登陆成功!")
-                .totalCount(0)
-                .status(response.getStatus())
-                .build();
+        JsonResult result = JsonResult.successForMessage("登陆成功", response.getStatus());
+        if (user == null) {
+            result.setMessage("账号密码不匹配！请重新输入");
+            return result;
+        }
+        result.setData(Collections.singletonList(user));
+        return result;
     }
 
     /**
@@ -149,16 +150,15 @@ public class WyUserController {
      */
     private WyUser loginByLoginName(final String loginName, final String password) {
         if (StringUtil.isEmpty(loginName) || StringUtil.isEmpty(password)) {
-            throw new IllegalArgumentException("用户名或者密码不能为空！");
+            throw new IllegalArgumentException("用户名或者密码不能为空");
         }
         if (!UserUtil.validateLoginName(loginName)) {
             if (!UserUtil.validatePassword(password)) {
-                throw new IllegalArgumentException("密码是6-18位字母和数字组合，包括.+*-_/特殊字符！");
+                throw new IllegalArgumentException("密码是6-18位字母和数字组合，包括.+*-_/特殊字符");
             }
-            throw new IllegalArgumentException("用户名是4-10位字母数字组合！");
+            throw new IllegalArgumentException("用户名是4-10位字母数字组合");
         }
-        WyUser user = wyUserService.loginByLoginName(loginName,password);
-        return user;
+        return wyUserService.loginByLoginName(loginName,password);
     }
 
     /**
@@ -171,7 +171,4 @@ public class WyUserController {
     	
         return null;
     }
-
-
-
 }
