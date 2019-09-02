@@ -107,8 +107,12 @@ public class WyUserServiceImpl implements WyUserService {
     }
     
     /**
-     * 
-     *
+     * 修改密码
+     * @param user 需要修改密码的WyUser对象
+     * @param newPassword 新的密码
+     * @throw NullPointException 当传入的user对象为null时抛出此异常
+     * @throw IllegargumentException 当出现参数异常时抛出此异常
+     * @return 修改成功返回true 修改失败返回false
      **/
     @Override
     public boolean updatePassword(final WyUser user, final String newPassword) {
@@ -118,10 +122,6 @@ public class WyUserServiceImpl implements WyUserService {
     	if (StringUtil.isEmpty(user.getUserName()) || StringUtil.isEmpty(user.getPassword) || StringUtil.isEmpty(user.getTel())) {
     		throw new IllegargumentException("参数不能为空");
     	}
-    	
-    
+    		
     }
-    
-   
-
 }
