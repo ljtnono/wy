@@ -181,19 +181,19 @@ public class WyUserController {
      * @return 成功返回修改成功 失败返回修改失败
      */
     @GetMapping("/updatePassword")
-    public JsonResult updatePassword(@Request("user") final String user,
+    public JsonResult updatePassword(
     						@RequestParam("oldPsw") final String oldPsw, 
     						@RequestParam("telNum") final String telNum, 
     						@RequestParam("newPsw") final String newPsw,
-    						HttpServletResponse response) {
+    						HttpServletResponse response, HttpServletRequest request) {
     	// TODO 待测试，需要用户具有修改密码的权限
-    	JsonResult result = JsonResult.succssForMessage("修改成功", response.getStatus());
+    	JsonResult result = JsonResult.successForMessage("修改成功", response.getStatus());
     	boolean updateResult = false;
-    	if (StringUtil.isEmpty(oldPsw) || StringUtil.isEmpty(telNum) || StrinUtil.isEmpty(newPsw)) {
+    	if (StringUtil.isEmpty(oldPsw) || StringUtil.isEmpty(telNum) || StringUtil.isEmpty(newPsw)) {
     		result.setMessage("参数不能为空");
     		return result;
     	}
-    	if (!UserUtil.validatPassword(oldPsw) || !UserUtil.validatePssword(newPsw)) {
+    	if (!UserUtil.validatePassword(oldPsw) || !UserUtil.validatePassword(newPsw)) {
             result.setMessage("密码是6-18位字母和数字组合，包括.+*-_/特殊字符");    
             if (!StringUtil.validateTel(telNum)) {
             	result.setMessage("手机格式不正确");
@@ -203,10 +203,9 @@ public class WyUserController {
         WyUser user = new WyUser();
         user.setTel(telNum);
         user.setPassword(oldPsw);
-        user.setUser()
         try {
         	updateResult = wyUserService.updatePassword(user, newPsw);	
-        } catch(IllegargumentException e){
+        } catch(IllegalArgumentException e){
         	if (logger.isInfoEnabled()) {
         		logger.info("[" + request.getRemoteAddr() + "]" + "请求修改密码失败！原因：" + e.getMessage());
         	}
