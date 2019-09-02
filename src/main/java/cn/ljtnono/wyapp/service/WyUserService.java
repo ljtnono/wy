@@ -47,4 +47,12 @@ public interface WyUserService {
      */
     WyUser loginByLoginName(final String loginName, final String password);
     
+    /**
+     * 修改密码
+     * @param user 需要修改密码的用户
+     * @param newPassword 新修改的密码
+     * @IllegargumentException 没有此用户时抛出此异常
+     * @return 成功返回 true 失败返回false
+     **/
+    boolean updatePassword(final WyUser user, final String newPassword);
 }

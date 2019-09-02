@@ -116,7 +116,7 @@ public class WyUserController {
      *             type = 2,  使用手机号和验证码登陆
      *             type = 3,  使用qq登陆
      *             type = 4,  使用微信登陆
-     * @return 成功返回携带user对象, 失败返回携带错误信息的JsonResult对象, 用户不存在返回用户
+     * @return 成功返回携带user对象, 失败返回携带错误信息的JsonResult对象, 用户不存在返回错误信息
      */
     @PostMapping("/login")
     public JsonResult login(@RequestParam("type") int type,
@@ -138,6 +138,7 @@ public class WyUserController {
             return result;
         }
         result.setData(Collections.singletonList(user));
+        // TODO 将用户信息存储在redis中去
         return result;
     }
 
@@ -168,7 +169,52 @@ public class WyUserController {
      * @return 成功返回登录的WyUser对象，失败返回null
      */
     private WyUser loginByTelNum(final String telNum, final String password) {
-    	
-        return null;
+    	return null;
+    }
+    
+    /**
+     * 根据注册时手机账号来修改密码
+     * @param user 要修改密码的用户名
+     * @param oldPsw 原来的密码
+     * @param telNum 注册时候绑定的手机
+     * @param newPsw 新的密码
+     * @return 成功返回修改成功 失败返回修改失败
+     */
+    @GetMapping("/updatePassword")
+    public JsonResult updatePassword(@Request("user") final String user,
+    						@RequestParam("oldPsw") final String oldPsw, 
+    						@RequestParam("telNum") final String telNum, 
+    						@RequestParam("newPsw") final String newPsw,
+    						HttpServletResponse response) {
+    	// TODO 待测试，需要用户具有修改密码的权限
+    	JsonResult result = JsonResult.succssForMessage("修改成功", response.getStatus());
+    	boolean updateResult = false;
+    	if (StringUtil.isEmpty(oldPsw) || StringUtil.isEmpty(telNum) || StrinUtil.isEmpty(newPsw)) {
+    		result.setMessage("参数不能为空");
+    		return result;
+    	}
+    	if (!UserUtil.validatPassword(oldPsw) || !UserUtil.validatePssword(newPsw)) {
+            result.setMessage("密码是6-18位字母和数字组合，包括.+*-_/特殊字符");    
+            if (!StringUtil.validateTel(telNum)) {
+            	result.setMessage("手机格式不正确");
+            }
+            return result;
+        }
+        WyUser user = new WyUser();
+        user.setTel(telNum);
+        user.setPassword(oldPsw);
+        user.setUser()
+        try {
+        	updateResult = wyUserService.updatePassword(user, newPsw);	
+        } catch(IllegargumentException e){
+        	if (logger.isInfoEnabled()) {
+        		logger.info("[" + request.getRemoteAddr() + "]" + "请求修改密码失败！原因：" + e.getMessage());
+        	}
+        	result.setMessage("修改失败！请检查参数后重试");
+        }
+        if (!updateResult) {
+        	result.setMessage("修改失败！请检查参数后重试");
+        }
+        return result;
     }
 }

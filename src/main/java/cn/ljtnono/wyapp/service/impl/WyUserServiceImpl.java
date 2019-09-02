@@ -105,5 +105,23 @@ public class WyUserServiceImpl implements WyUserService {
     	wyUserDao.updateByExampleSelective(user, wyUserExample);
     	return wyUsers.get(0);
     }
+    
+    /**
+     * 
+     *
+     **/
+    @Override
+    public boolean updatePassword(final WyUser user, final String newPassword) {
+    	if (user == null) {
+    		throw new NullPointException("参数不能为null");
+    	}	
+    	if (StringUtil.isEmpty(user.getUserName()) || StringUtil.isEmpty(user.getPassword) || StringUtil.isEmpty(user.getTel())) {
+    		throw new IllegargumentException("参数不能为空");
+    	}
+    	
+    
+    }
+    
+   
 
 }
