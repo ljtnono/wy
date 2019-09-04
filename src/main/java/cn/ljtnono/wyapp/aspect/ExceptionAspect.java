@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version 1.1
  * @date 2019/8/28
  */
+
 @ControllerAdvice(basePackages = {"cn.ljtnono.wyapp.controller"})
 public class ExceptionAspect {
 
