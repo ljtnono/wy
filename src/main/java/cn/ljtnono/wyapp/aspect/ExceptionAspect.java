@@ -3,6 +3,7 @@ package cn.ljtnono.wyapp.aspect;
 import cn.ljtnono.wyapp.pojo.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -71,4 +72,16 @@ public class ExceptionAspect {
     public JsonResult requestMethodError(HttpServletRequest request, HttpServletResponse response) {
         return JsonResult.fail(response.getStatus(), "不允许" + request.getMethod() + "请求方式");
     }
+
+    /**
+     * @param response http响应
+     * @return JsonResut 对象
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseBody
+    public JsonResult accessDeniedException(HttpServletResponse response) {
+        return JsonResult.fail(response.getStatus(), "禁止访问");
+    }
+
+
 }

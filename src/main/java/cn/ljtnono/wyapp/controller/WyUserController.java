@@ -9,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,11 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 
 /**
- *  用户数据获取
- *  @author ljt
- *  @date 2019/5/28
- *  @version 1.0
-*/
+ * 用户数据获取
+ *
+ * @author ljt
+ * @version 1.0
+ * @date 2019/5/28
+ */
 @RestController
 public class WyUserController {
 
@@ -31,6 +35,7 @@ public class WyUserController {
 
     /**
      * 根据id 获取用户数据
+     *
      * @param id 要获取的用户id
      * @return JSON字符串
      */
@@ -41,6 +46,7 @@ public class WyUserController {
 
     /**
      * 根据name获取用户数据
+     *
      * @param name 用户的名字
      * @return JSON字符串
      */
@@ -52,16 +58,17 @@ public class WyUserController {
 
     /**
      * 处理手机注册请求
+     *
      * @param loginName 用户名
-     * @param password 用户设置的密码
-     * @param request http请求
-     * @param response http相应
+     * @param password  用户设置的密码
+     * @param request   http请求
+     * @param response  http相应
      * @return 返回携带User对象的JsonResult对象
      */
     @PostMapping("/regist")
     public JsonResult regist(@RequestParam("loginName") final String loginName,
                              @RequestParam("password") final String password,
-                             @RequestParam("tel")final String tel,
+                             @RequestParam("tel") final String tel,
                              HttpServletRequest request,
                              HttpServletResponse response) {
         JsonResult result;
@@ -70,7 +77,7 @@ public class WyUserController {
             WyUser wyUser = wyUserService.regist(loginName, password, tel);
             if (wyUser == null) {
                 if (logger.isErrorEnabled()) {
-                    logger.info("[" + request.getRemoteAddr() + "]" + "请求注册账号失败！数据库插入失败" );
+                    logger.info("[" + request.getRemoteAddr() + "]" + "请求注册账号失败！数据库插入失败");
                 }
                 throw new IllegalArgumentException("注册失败");
             } else {
@@ -91,12 +98,12 @@ public class WyUserController {
     }
 
     /**
-     *  检查用户名是否重复
+     * 检查用户名是否重复
+     *
      * @param loginName 需要检查的用户名
      * @return 重复返回true 不重复返回false loginName不符合格式也返回false
      */
     @GetMapping("/checkRepeat")
-    @Secured({"ROLE_user", "ROLE_admin"})
     public JsonResult checkRepeat(@RequestParam("loginName") final String loginName,
                                   HttpServletResponse response) {
 
@@ -112,17 +119,19 @@ public class WyUserController {
 
     /**
      * 用户登录
+     *
      * @param response http响应对象
-     * @param type 登陆的类型
-     *             type = 1，使用账号和密码登录
-     *             type = 2,  使用手机号和验证码登陆
-     *             type = 3,  使用qq登陆
-     *             type = 4,  使用微信登陆
+     * @param type     登陆的类型
+     *                 type = 1，使用账号和密码登录
+     *                 type = 2,  使用手机号和验证码登陆
+     *                 type = 3,  使用qq登陆
+     *                 type = 4,  使用微信登陆
      * @return 成功返回携带user对象, 失败返回携带错误信息的JsonResult对象, 用户不存在返回错误信息
      */
     @PostMapping("/login")
     public JsonResult login(@RequestParam("type") int type,
                             WyUser user,
+                            HttpServletRequest request,
                             HttpServletResponse response) {
 
         if (type == 1) {
@@ -140,16 +149,18 @@ public class WyUserController {
             return result;
         }
         result.setData(Collections.singletonList(user));
-        // TODO 将用户信息存储在redis中去
+        // TODO 将用户信息存储在session中
+
         return result;
     }
 
     /**
      * 根据用户名和密码来登录
+     *
      * @param loginName 登录的用户名
-     * @param password 登录的密码
-     * @exception IllegalArgumentException 如果loginName 或者 password为空字符串，抛出此异常
+     * @param password  登录的密码
      * @return 成功返回登录的WyUser对象，失败返回null
+     * @throws IllegalArgumentException 如果loginName 或者 password为空字符串，抛出此异常
      */
     private WyUser loginByLoginName(final String loginName, final String password) {
         if (StringUtil.isEmpty(loginName) || StringUtil.isEmpty(password)) {
@@ -161,22 +172,23 @@ public class WyUserController {
             }
             throw new IllegalArgumentException("用户名是4-10位字母数字组合");
         }
-        return wyUserService.loginByLoginName(loginName,password);
+        return wyUserService.loginByLoginName(loginName, password);
     }
 
     /**
      * 根据手机号码登录
-     * @param telNum 登录用户绑定的手机号
+     *
+     * @param telNum   登录用户绑定的手机号
      * @param password 登录用户的密码
      * @return 成功返回登录的WyUser对象，失败返回null
      */
     private WyUser loginByTelNum(final String telNum, final String password) {
-    	return null;
+        return null;
     }
-    
+
     /**
      * 根据注册时手机账号来修改密码
-     * @param user 要修改密码的用户名
+     *
      * @param oldPsw 原来的密码
      * @param telNum 注册时候绑定的手机
      * @param newPsw 新的密码
@@ -184,21 +196,21 @@ public class WyUserController {
      */
     @GetMapping("/updatePassword")
     public JsonResult updatePassword(
-    						@RequestParam("oldPsw") final String oldPsw, 
-    						@RequestParam("telNum") final String telNum, 
-    						@RequestParam("newPsw") final String newPsw,
-    						HttpServletResponse response, HttpServletRequest request) {
-    	// TODO 待测试，需要用户具有修改密码的权限
-    	JsonResult result = JsonResult.successForMessage("修改成功", response.getStatus());
-    	boolean updateResult = false;
-    	if (StringUtil.isEmpty(oldPsw) || StringUtil.isEmpty(telNum) || StringUtil.isEmpty(newPsw)) {
-    		result.setMessage("参数不能为空");
-    		return result;
-    	}
-    	if (!UserUtil.validatePassword(oldPsw) || !UserUtil.validatePassword(newPsw)) {
-            result.setMessage("密码是6-18位字母和数字组合，包括.+*-_/特殊字符");    
+            @RequestParam("oldPsw") final String oldPsw,
+            @RequestParam("telNum") final String telNum,
+            @RequestParam("newPsw") final String newPsw,
+            HttpServletResponse response, HttpServletRequest request) {
+        // TODO 待测试，需要用户具有修改密码的权限
+        JsonResult result = JsonResult.successForMessage("修改成功", response.getStatus());
+        boolean updateResult = false;
+        if (StringUtil.isEmpty(oldPsw) || StringUtil.isEmpty(telNum) || StringUtil.isEmpty(newPsw)) {
+            result.setMessage("参数不能为空");
+            return result;
+        }
+        if (!UserUtil.validatePassword(oldPsw) || !UserUtil.validatePassword(newPsw)) {
+            result.setMessage("密码是6-18位字母和数字组合，包括.+*-_/特殊字符");
             if (!StringUtil.validateTel(telNum)) {
-            	result.setMessage("手机格式不正确");
+                result.setMessage("手机格式不正确");
             }
             return result;
         }
@@ -206,15 +218,15 @@ public class WyUserController {
         user.setTel(telNum);
         user.setPassword(oldPsw);
         try {
-        	updateResult = wyUserService.updatePassword(user, newPsw);	
-        } catch(IllegalArgumentException e){
-        	if (logger.isInfoEnabled()) {
-        		logger.info("[" + request.getRemoteAddr() + "]" + "请求修改密码失败！原因：" + e.getMessage());
-        	}
-        	result.setMessage("修改失败！请检查参数后重试");
+            updateResult = wyUserService.updatePassword(user, newPsw);
+        } catch (IllegalArgumentException e) {
+            if (logger.isInfoEnabled()) {
+                logger.info("[" + request.getRemoteAddr() + "]" + "请求修改密码失败！原因：" + e.getMessage());
+            }
+            result.setMessage("修改失败！请检查参数后重试");
         }
         if (!updateResult) {
-        	result.setMessage("修改失败！请检查参数后重试");
+            result.setMessage("修改失败！请检查参数后重试");
         }
         return result;
     }

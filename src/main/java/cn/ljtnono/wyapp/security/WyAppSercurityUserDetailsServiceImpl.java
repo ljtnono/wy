@@ -6,6 +6,7 @@ import cn.ljtnono.wyapp.entity.WyUserExample;
 import cn.ljtnono.wyapp.utils.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
